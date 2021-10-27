@@ -37,7 +37,6 @@ namespace VideoDown.ViewModel
         protected override void OnInitialActivate()
         {
             UpdateApp();
-            //ProductDB();
         }
 
         public void Start()
