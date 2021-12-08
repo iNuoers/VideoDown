@@ -2,12 +2,11 @@
 {
     public class HttpReturnData
     {
-        public bool success { get; set; }
-        public int code { get; set; }
-        public string message { get; set; }
-        public object data { get; set; }
-        public string extras { get; set; }
-        public string timestamp { get; set; }
-
+        public bool Success { get; set; }
+        public int Code { get; set; }
+        public string Message { get; set; }
+        public object Data { get; set; }
+        public string Extras { get; set; }
+        public string Timestamp { get; set; }
     }
 }

@@ -19,18 +19,18 @@
     Title="视频解析">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="150" />
+            <RowDefinition Height="auto" />
             <RowDefinition />
             <RowDefinition
                 Height="auto" />
-            <RowDefinition
-                Height="auto" />
         </Grid.RowDefinitions>
-        <TextBlock HorizontalAlignment="Center">目前只支持视频链接,不支持个人主页链接。ps:西瓜只支持下载高清蓝光不支持去水印</TextBlock>
-        <Grid
-            Grid.Row="1">
+        <TextBlock Grid.Row="0" HorizontalAlignment="Center">目前只支持视频链接,不支持个人主页链接。ps:西瓜只支持下载高清蓝光不支持去水印</TextBlock>
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
+                <ColumnDefinition Width="350" />
+                <ColumnDefinition Width="240" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <TextBox
@@ -38,10 +38,11 @@
                 md:HintAssist.Hint="视频链接(支持抖音.火山,快手,西瓜,皮皮虾)"
                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
                 Margin="10"
-                TextWrapping="Wrap"
                 AcceptsReturn="True"
+                FontSize="10"
+
                 Text="{Binding RichText}"
-                Grid.Column="0" />
+                Grid.Column="0" Cursor="IBeam" />
             <TextBox
                 md:TextFieldAssist.HasClearButton="True"
                 md:HintAssist.Hint="日志框"
@@ -51,11 +52,46 @@
                 TextWrapping="Wrap"
                 IsReadOnly="False"
                 AcceptsReturn="True"
+                FontSize="10"
                 Text="{Binding LogText}" Cursor="IBeam" />
+            <StackPanel  Grid.Column="2"
+                         Orientation="Horizontal"
+                         HorizontalAlignment="Center">
+                <StackPanel>
+
+                    <Button
+                        Style="{StaticResource MaterialDesignRaisedDarkButton}"
+                        FontWeight="Black"
+                        Content="分析链接"
+                        ToolTip="分析链接"
+
+                        Margin="10"
+                        Command="{s:Action Start}"
+                        HorizontalAlignment="Center" />
+                    <Button
+                        Style="{StaticResource MaterialDesignRaisedDarkButton}"
+                        FontWeight="Black"
+                        ToolTip="打开目录"
+                        Content="打开目录"
+                        Margin="10"
+                        Command="{s:Action Open}"
+                        HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel>
+                    <Button
+                        Style="{StaticResource MaterialDesignRaisedDarkButton}"
+                        FontWeight="Black"
+                        ToolTip="下载勾选"
+                        Content="下载勾选"
+                        Margin="10"
+                        Command="{s:Action ToDwon}"
+                        HorizontalAlignment="Center" />
+                </StackPanel>
+            </StackPanel>
         </Grid>
-        <StackPanel
-            IsEnabled="{Binding Enable}"
-            Grid.Row="2">
+        <StackPanel Grid.Row="2"
+                    IsEnabled="{Binding ProgressBarEnable}">
+
             <StackPanel
                 x:Name="ProgressBar"
                 Visibility="{Binding Visibility_ProgressBar}">
@@ -69,34 +105,346 @@
                     Value="{Binding ProgressBarValue}"
                     Height="20" />
             </StackPanel>
-            <StackPanel
-                Orientation="Horizontal"
-                HorizontalAlignment="Center">
-                <Button
-                    Style="{StaticResource MaterialDesignRaisedDarkButton}"
-                    Height="50"
-                    md:ButtonAssist.CornerRadius="25"
-                    FontWeight="Black"
-                    Content="开始"
-                    ToolTip="开始"
-                    Margin="10"
-                    Command="{s:Action Start}"
-                    HorizontalAlignment="Center" />
-                <Button
-                    Style="{StaticResource MaterialDesignRaisedDarkButton}"
-                    Height="50"
-                    FontWeight="Black"
-                    md:ButtonAssist.CornerRadius="25"
-                    ToolTip="下载目录"
-                    Content="下载目录"
-                    Margin="10"
-                    Command="{s:Action Open}"
-                    HorizontalAlignment="Center" />
-            </StackPanel>
         </StackPanel>
-        <TextBlock
+        <DataGrid
             Grid.Row="3"
-                   Text="QQ群:1009735595"
+
+            ItemsSource="{Binding UrlList}"
+            Margin="0 5 0 0"
+            SelectedItem="{Binding DataSelect}"
+            CanUserSortColumns="True"
+            CanUserAddRows="False"
+            CanUserDeleteRows="False"
+            AutoGenerateColumns="False"
+            IsReadOnly="False">
+            <DataGrid.ColumnHeaderStyle>
+                <Style
+                    TargetType="{x:Type DataGridColumnHeader}"
+                    BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                    <Setter
+                        Property="HorizontalContentAlignment"
+                        Value="Center" />
+                    <Setter
+                        Property="ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <TextBlock
+                                    TextWrapping="Wrap"
+                                    Text="{Binding}"
+                                    FontWeight="Light"
+                                    TextAlignment="Right" />
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+            <DataGrid.Columns>
+                <DataGridCheckBoxColumn
+                    Binding="{Binding Check}"
+                    ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"
+                    EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}">
+                    <DataGridCheckBoxColumn.Header>
+                        <Border
+                            Background="Transparent">
+                            <CheckBox
+                                Click ="{s:Action CheckedClick}" IsChecked="{Binding IsChecked}" />
+                        </Border>
+                    </DataGridCheckBoxColumn.Header>
+                    <DataGridCheckBoxColumn.HeaderStyle>
+                        <Style
+                            TargetType="{x:Type DataGridColumnHeader}"
+                            BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                            <Setter
+                                Property="HorizontalContentAlignment"
+                                Value="Center" />
+                        </Style>
+                    </DataGridCheckBoxColumn.HeaderStyle>
+                </DataGridCheckBoxColumn>
+                <DataGridTextColumn  Header="序号"
+                                     Binding="{Binding Num}"
+                                     IsReadOnly="True"
+
+                                     EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}">
+                    <DataGridTextColumn.HeaderStyle>
+                        <Style
+                            TargetType="{x:Type DataGridColumnHeader}"
+                            BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                            <Setter
+                                Property="HorizontalContentAlignment"
+                                Value="Center" />
+                            <Setter
+                                Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <TextBlock
+                                            TextWrapping="Wrap"
+                                            Text="{Binding}"
+                                            FontWeight="Light"
+                                            TextAlignment="Right" />
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DataGridTextColumn.HeaderStyle>
+                    <DataGridTextColumn.ElementStyle>
+                        <Style
+                            TargetType="{x:Type TextBlock}"
+                            BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                            <Setter
+                                Property="HorizontalAlignment"
+                                Value="Center" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn  Header="类型"
+                                     Binding="{Binding TypeName}"
+                                     IsReadOnly="True"
+
+                                     EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
+                    <DataGridTextColumn.HeaderStyle>
+                        <Style
+                            TargetType="{x:Type DataGridColumnHeader}"
+                            BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                            <Setter
+                                Property="HorizontalContentAlignment"
+                                Value="Center" />
+                            <Setter
+                                Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <TextBlock
+                                            TextWrapping="Wrap"
+                                            Text="{Binding}"
+                                            FontWeight="Light"
+                                            TextAlignment="Center" />
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DataGridTextColumn.HeaderStyle>
+                    <DataGridTextColumn.ElementStyle>
+                        <Style
+                            TargetType="{x:Type TextBlock}"
+                            BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                            <Setter
+                                Property="HorizontalAlignment"
+                                Value="Center" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn  Header="ID"
+                                     Binding="{Binding ID}"
+                                     Width="100"
+                                     IsReadOnly="True"
+
+                                     EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
+                    <DataGridTextColumn.HeaderStyle>
+                        <Style
+                            TargetType="{x:Type DataGridColumnHeader}"
+                            BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                            <Setter
+                                Property="HorizontalContentAlignment"
+                                Value="Center" />
+                            <Setter
+                                Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <TextBlock
+                                            TextWrapping="Wrap"
+                                            Text="{Binding}"
+                                            FontWeight="Light"
+                                            TextAlignment="Center" />
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DataGridTextColumn.HeaderStyle>
+                    <DataGridTextColumn.ElementStyle>
+                        <Style
+                            TargetType="{x:Type TextBlock}"
+                            BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                            <Setter
+                                Property="HorizontalAlignment"
+                                Value="Center" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn  Header="保存名称"
+                                     Binding="{Binding FileName}"
+                                     Width="150"
+                                     IsReadOnly="True"
+
+                                     EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
+                    <DataGridTextColumn.HeaderStyle>
+                        <Style
+                            TargetType="{x:Type DataGridColumnHeader}"
+                            BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                            <Setter
+                                Property="HorizontalContentAlignment"
+                                Value="Center" />
+                            <Setter
+                                Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <TextBlock
+                                            TextWrapping="Wrap"
+                                            Text="{Binding}"
+                                            FontWeight="Light"
+                                            TextAlignment="Center" />
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DataGridTextColumn.HeaderStyle>
+                    <DataGridTextColumn.ElementStyle>
+                        <Style
+                            TargetType="{x:Type TextBlock}"
+                            BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                            <Setter
+                                Property="HorizontalAlignment"
+                                Value="Center" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn  Header="说明"
+                                     Binding="{Binding Explain}"
+                                     Width="150"
+                                     IsReadOnly="True"
+                                     EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
+                    <DataGridTextColumn.HeaderStyle>
+                        <Style
+                            TargetType="{x:Type DataGridColumnHeader}"
+                            BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                            <Setter
+                                Property="HorizontalContentAlignment"
+                                Value="Center" />
+                            <Setter
+                                Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <TextBlock
+                                            TextWrapping="Wrap"
+                                            Text="{Binding}"
+                                            FontWeight="Light"
+                                            TextAlignment="Center" />
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DataGridTextColumn.HeaderStyle>
+                    <DataGridTextColumn.ElementStyle>
+                        <Style
+                            TargetType="{x:Type TextBlock}"
+                            BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                            <Setter
+                                Property="HorizontalAlignment"
+                                Value="Center" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn  Header="链接"
+                                     Binding="{Binding Url}"
+                                     Width="300"
+                                     IsReadOnly="True"
+
+                                     EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
+                    <DataGridTextColumn.HeaderStyle>
+                        <Style
+                            TargetType="{x:Type DataGridColumnHeader}"
+                            BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                            <Setter
+                                Property="HorizontalContentAlignment"
+                                Value="Center" />
+                            <Setter
+                                Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <TextBlock
+                                            TextWrapping="Wrap"
+                                            Text="{Binding}"
+                                            FontWeight="Light"
+                                            TextAlignment="Right" />
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DataGridTextColumn.HeaderStyle>
+                    <DataGridTextColumn.ElementStyle>
+                        <Style
+                            TargetType="{x:Type TextBlock}"
+                            BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                            <Setter
+                                Property="HorizontalAlignment"
+                                Value="Left" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn  Header="下载链接"
+                                     Binding="{Binding DownUrl}"
+                                     Width="300"
+                                     IsReadOnly="True"
+
+                                     EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
+                    <DataGridTextColumn.HeaderStyle>
+                        <Style
+                            TargetType="{x:Type DataGridColumnHeader}"
+                            BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                            <Setter
+                                Property="HorizontalContentAlignment"
+                                Value="Left" />
+                            <Setter
+                                Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <TextBlock
+                                            TextWrapping="Wrap"
+                                            Text="{Binding}"
+                                            FontWeight="Light"
+                                            TextAlignment="Left" />
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DataGridTextColumn.HeaderStyle>
+                    <DataGridTextColumn.ElementStyle>
+                        <Style
+                            TargetType="{x:Type TextBlock}"
+                            BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                            <Setter
+                                Property="HorizontalAlignment"
+                                Value="Left" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+            <DataGrid.ContextMenu>
+                <ContextMenu
+                        StaysOpen="true">
+                    <MenuItem
+                            Header="复制ID"
+                            Click="{s:Action CopyID}" />
+                    <MenuItem
+                            Header="复制说明"
+                            Click="{s:Action CopyShuoMing}" />
+                    <MenuItem
+                            Header="复制原始链接"
+                            Click="{s:Action CopyUrl}" />
+                    <MenuItem
+                            Header="复制下载链接"
+                            Click="{s:Action CopyDownUrl}" />
+                    <MenuItem
+                            Header="网页打开原始链接"
+                            Click="{s:Action ToUrl}" />
+                    <MenuItem
+                            Header="网页打开下载链接"
+                            Click="{s:Action ToDownUrl}" />
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
+
+        <TextBlock
+            Grid.Row="4"
+            Text="QQ群:1009735595"
             HorizontalAlignment="Center"
             Margin="10" />
     </Grid>

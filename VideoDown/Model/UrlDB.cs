@@ -1,9 +1,20 @@
 ﻿namespace VideoDown.Model
 {
-    internal class UrlDB
+    public class UrlDB
     {
-        public string url { get; set; }
-        public string code { get; set; }
-        public string name { get; set; }
+        public string Url { get; set; }
+        public string TypeCode { get; set; }
+        public string TypeName { get; set; }
+        public string SavePath { get; set; }
+        public string FileName { get; set; }
+        public string ID { get; set; }
+        public string Explain { get; set; }
+        public string DownUrl { get; set; }
+    }
+
+    public class UrlDBShow : UrlDB
+    {
+        public bool Check { get; set; } = false;
+        public int Num { get; set; }
     }
 }
