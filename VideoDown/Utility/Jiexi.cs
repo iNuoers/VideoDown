@@ -1,6 +1,7 @@
 ﻿using CsharpHttpHelper;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using VideoDown.Model;
@@ -120,7 +121,45 @@ namespace VideoDown.Utility
                 {
                     videojson = jo["anyVideo"]["gidInformation"]["packerData"];
                 }
-                var videoUrlListJson = videojson["videoResource"]["normal"]["video_list"];
+                var videoUrlListJson = videojson["videoResource"]["dash_120fps"]["video_list"];
+                if (videoUrlListJson == null)
+                {
+                    videoUrlListJson = videojson["videoResource"]["dash_120fps"]["dynamic_video"];
+                    if (videoUrlListJson != null)
+                    {
+                        var video = videoUrlListJson["dynamic_video_list"];
+                        var audio = videoUrlListJson["dynamic_audio_list"];
+                        if (audio != null && video != null)
+                        {
+                            var video1 = JArray.Parse(video.ToString()).Last()["main_url"];
+                            var audio1 = JArray.Parse(audio.ToString()).Last()["main_url"];
+                            var video1String = new Regex(@"\\u([0-9A-F]{4})", RegexOptions.IgnoreCase | RegexOptions.Compiled).Replace(video1.ToString(), x => Convert.ToChar(Convert.ToUInt16(x.Result("$1"), 16)).ToString());
+                            video1String = HttpHelper.Base64ToString(video1String, Encoding.UTF8);
+                            var audio1String = new Regex(@"\\u([0-9A-F]{4})", RegexOptions.IgnoreCase | RegexOptions.Compiled).Replace(audio1.ToString(), x => Convert.ToChar(Convert.ToUInt16(x.Result("$1"), 16)).ToString());
+                            audio1String = HttpHelper.Base64ToString(audio1String, Encoding.UTF8);
+                            var title1 = videojson["title"] ?? jo["anyVideo"]["gidInformation"]["packerData"]["albumInfo"]["title"];
+
+                            var b1 = PathHelper.Save("xigua", title1.ToString(), id.ToString());
+                            if (b1.Success)
+                            {
+                                var b2 = PathHelper.Save1("xigua", title1.ToString(), id.ToString());
+                                b2.Data = new UrlDB
+                                {
+                                    Url = db.Url,
+                                    TypeCode = db.TypeCode,
+                                    TypeName = db.TypeName,
+                                    SavePath = b1.Message,
+                                    FileName = System.IO.Path.GetFileNameWithoutExtension(b2.Message),
+                                    ID = id.ToString(),
+                                    Explain = title1.ToString(),
+                                    DownUrl = video1String.ToString(),
+                                    DownUrl1 = audio1String.ToString(),
+                                };
+                                return b2;
+                            }
+                        }
+                    }
+                }
                 var videoUrl = videoUrlListJson["video_4"];
                 if (videoUrl == null)
                 {

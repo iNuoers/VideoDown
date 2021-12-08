@@ -26,7 +26,7 @@
             <RowDefinition
                 Height="auto" />
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" HorizontalAlignment="Center">目前只支持视频链接,不支持个人主页链接。ps:西瓜只支持下载高清蓝光不支持去水印</TextBlock>
+        <TextBlock Grid.Row="0" HorizontalAlignment="Center">目前只支持视频链接,不支持个人主页链接。ps:西瓜的话是音频和视频分离的</TextBlock>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="350" />
@@ -416,6 +416,43 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
+                <DataGridTextColumn  Header="音频链接"
+                                     Binding="{Binding DownUrl1}"
+                                     Width="300"
+                                     IsReadOnly="True"
+
+                                     EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
+                    <DataGridTextColumn.HeaderStyle>
+                        <Style
+                            TargetType="{x:Type DataGridColumnHeader}"
+                            BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                            <Setter
+                                Property="HorizontalContentAlignment"
+                                Value="Left" />
+                            <Setter
+                                Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <TextBlock
+                                            TextWrapping="Wrap"
+                                            Text="{Binding}"
+                                            FontWeight="Light"
+                                            TextAlignment="Left" />
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DataGridTextColumn.HeaderStyle>
+                    <DataGridTextColumn.ElementStyle>
+                        <Style
+                            TargetType="{x:Type TextBlock}"
+                            BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                            <Setter
+                                Property="HorizontalAlignment"
+                                Value="Left" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
             </DataGrid.Columns>
             <DataGrid.ContextMenu>
                 <ContextMenu
@@ -438,6 +475,9 @@
                     <MenuItem
                             Header="网页打开下载链接"
                             Click="{s:Action ToDownUrl}" />
+                    <MenuItem
+                            Header="网页打开音频链接"
+                            Click="{s:Action ToDownUrl1}" />
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>

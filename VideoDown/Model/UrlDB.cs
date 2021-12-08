@@ -10,6 +10,7 @@
         public string ID { get; set; }
         public string Explain { get; set; }
         public string DownUrl { get; set; }
+        public string DownUrl1 { get; set; }
     }
 
     public class UrlDBShow : UrlDB

@@ -2,7 +2,9 @@
 using Stylet;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -66,7 +68,7 @@ namespace VideoDown.ViewModel
                     {
                         Log($"第{i + 1}条解析成功");
                         var data = result.Data as UrlDB;
-                        showlist.Add(new UrlDBShow { TypeCode = data.TypeCode, TypeName = data.TypeName, Url = data.Url, Num = i + 1, DownUrl = data.DownUrl, SavePath = data.SavePath, Explain = data.Explain, FileName = data.FileName, ID = data.ID }); ;
+                        showlist.Add(new UrlDBShow { TypeCode = data.TypeCode, TypeName = data.TypeName, Url = data.Url, Num = i + 1, DownUrl = data.DownUrl, SavePath = data.SavePath, Explain = data.Explain, FileName = data.FileName, ID = data.ID, DownUrl1 = data.DownUrl1 }); ;
                     }
                     else
                     {
@@ -213,7 +215,15 @@ namespace VideoDown.ViewModel
                 {
                     if (tokenSource.IsCancellationRequested)
                         break;
-                    Down(list[i].DownUrl, list[i].SavePath);
+                    if (string.IsNullOrWhiteSpace(list[i].DownUrl1))
+                    {
+                        Down(list[i].DownUrl, list[i].SavePath);
+                    }
+                    else
+                    {
+                        Down(list[i].DownUrl, list[i].SavePath);
+                        Down(list[i].DownUrl1, list[i].SavePath.Replace("mp4", "mp3"));
+                    }
                 }
             });
         }
@@ -313,6 +323,20 @@ namespace VideoDown.ViewModel
             var num = DataSelect.DownUrl;
 
             UrlHelper.OpenBrowser(num);
+        }
+
+        public void ToDownUrl1()
+        {
+            if (DataSelect == null)
+            {
+                Message("未选择任何数据行");
+                return;
+            }
+            var num = DataSelect.DownUrl1;
+            if (!string.IsNullOrWhiteSpace(num))
+            {
+                UrlHelper.OpenBrowser(num);
+            }
         }
 
         #endregion 菜单
