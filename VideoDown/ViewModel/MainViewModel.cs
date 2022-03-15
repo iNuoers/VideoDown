@@ -139,10 +139,10 @@ namespace VideoDown.ViewModel
                 try
                 {
                     var updateInfo = JObject.Parse(result.Data.ToString());
-                    var newVersion = new System.Version(updateInfo["Version"].ToString());
+                    var newVersion = new System.Version(updateInfo["SoftVersion"].ToString());
                     var oldVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
                     string UpdateTime = updateInfo["SoftUpdateTime"].ToString();
-                    string UpdateInfo = updateInfo["UpdateInfo"].ToString();
+                    string UpdateInfo = updateInfo["SoftUpdateInfo"].ToString();
                     string FullName = updateInfo["FullName"].ToString();
                     string UpdateUrl = updateInfo["UpdateUrl"].ToString();
                     if (newVersion > oldVersion)
