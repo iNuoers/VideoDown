@@ -255,7 +255,7 @@ namespace VideoDown.Utility
                 var title = DateTime.Now.ToString("yyyyMMddhhmmss");
                 if (titleJson != null)
                 {
-                    title = titleJson.ToString().Trim();
+                    title = titleJson.ToString().Replace("\n", "").Replace("\r", "").Trim();
                 }
                 if (url_list != null)
                 {
